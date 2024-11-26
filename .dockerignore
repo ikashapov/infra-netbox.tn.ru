@@ -1,9 +1,0 @@
-.git*
-*.md
-build*
-env
-test-configuration
-.netbox/.git*
-.netbox/contrib
-.netbox/scripts
-.netbox/upgrade.sh

@@ -6,4 +6,4 @@ PROJECT=infra-netbox.tn.ru
 
 # https://en.wikipedia.org/wiki/Deployment_environment
 # prod | stage | test
-DEPLOYMENT=stage
+DEPLOYMENT=prod
