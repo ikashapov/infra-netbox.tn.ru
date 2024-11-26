@@ -11,3 +11,14 @@ configuration/ldap/*
 !configuration/logging.py
 !configuration/plugins.py
 super-linter.log
+
+secrets/.gitlab
+secrets/key.json
+build-*.log
+archive/**
+inventory/**
+./.env.backend
+./.env.pg
+./.env
+./.build.tags
+

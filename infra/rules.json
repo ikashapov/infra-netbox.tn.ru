@@ -1,0 +1,7 @@
+[
+  {
+    "description": "delete all untagged Docker images older than 48 hours",
+    "untagged": true,
+    "expire_period": "48h"
+  }
+]

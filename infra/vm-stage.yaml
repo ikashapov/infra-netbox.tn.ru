@@ -1,0 +1,199 @@
+#cloud-config
+# vim: syntax=yaml
+users:
+  - name: root
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOYD8Uz5K5AlMoHPLGSCR4j/erxxh22E41WcfQwYRYzv ikashapov-ed25519-20221111
+  - name: prj
+    uid: 1000
+    shell: /usr/sbin/nologin
+
+  - name: ikashapov
+    groups: sudo
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOYD8Uz5K5AlMoHPLGSCR4j/erxxh22E41WcfQwYRYzv ikashapov-ed25519-20221111
+
+  - name: alekseev
+    groups: sudo
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAcaQy9ncwr3l26+tTdch5g2lsmoVjngGZ4LUlPJCBe9 aeg-eddsa-key-20221121
+
+  - name: baydakov
+    groups: sudo
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL1VAlwoHe7E0NyMt4Ktet+RaD95HxYKE1BH2VsONw5U baydakov@note
+  
+  - name: gruzdov
+    groups: sudo
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIrHF1EVikxH5RqKKx3Hu9AjL/3rteZHfPpWlgLqWSc+ tn key
+
+write_files:
+-   encoding: b64
+    content: |
+        AAAAAQAAABRhYmp2dWkwaWJrY2Z1Ym1kMmMyYgAAABDIUG9+nQPcEIYWs8u6VDMVAAAADArCYMi6
+        2vA4kCwYXEBtzbPLjWvV6CPA01Xuix280PKEOTJvBN9GVNoVeK3owhJcSxDvom6fgdE9wOVPR14+
+        DtizF+ANa0+LJRdPflTNGS22HLde2rOBm/xWSybGgxKrYDJ41raOkxX2wpmcDOfBpPLIKB04Tl+9
+        A8cD5AXdyeEwRfoojPosn8rZMK+NVIS24P8v9IL9AEX4jPfZVZ5qxQTtnbu33Q/Y5LsjQGIpXF2A
+        PRCFfz6Bvm0CUAuLGakkTbrFgYe9R8ca1hqL8tm6xk0g/B+1US3uzmkOs29/XznO5m8lUb9W9QAn
+        nFho4mAyUu9TkKDa7tyT0K48ACd5Ce0WRmEh8s5g3yWlp8YTvO4OklBqRwOKeuyZ4cwP7tpemXMe
+        ASisBkZbQBP2+kfBXpoGZ7IrohblMD+axG/blfC/oBhTDyiTi6InIOEXqtB3+mReFi5Wkbfl3qKS
+        0a2TdKfnAK64KrsiEckwtFoFGKl32A5JdqLudmxnSA1H6aBFl5mP5kheikzSjrU8xaj7dNIGUhQV
+        KNSVRRLWIQp63W45b9Y9wQOJsSLjo6qOuFt3Fbb0tH4rn1Q=
+    owner: root:root
+    path: /root/.ssh/id_ed25519.enc
+    permissions: '0600'
+-   content: |
+        ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPg1nnpZt88m9Mnb9sBGHn4hNqWwfk1vu4aKUllVWX4D inventory@github
+    owner: root:root
+    path: /root/.ssh/id_ed25519.pub
+    permissions: '0644'
+
+
+# Update apt database on first boot (run 'apt-get update').
+# Note, if packages are given, or package_upgrade is true, then
+# update will be done independent of this setting.
+#
+# Default: false
+# Aliases: apt_update
+package_update: true
+
+# Upgrade the instance on first boot
+# (ie run apt-get upgrade)
+#
+# Default: false
+# Aliases: apt_upgrade
+package_upgrade: true
+
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg-agent
+  - software-properties-common
+  - jq
+  - git
+
+timezone: "Europe/Moscow"
+
+# Install Docker, for production, consider pinning to stable versions
+runcmd:
+  - echo "docker install:" + $(TZ=":Europe/Moscow" date +"%FT%T%z")
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - apt-get update -y
+  - apt-get install -y docker-ce docker-ce-cli containerd.io
+  - systemctl start docker
+  - systemctl enable docker
+  - usermod -aG docker ikashapov
+  - usermod -aG docker alekseev
+  - usermod -aG docker baydakov
+  - usermod -aG docker gruzdov
+  - usermod -aG docker prj
+  - usermod -g docker prj
+  - curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  - curl -L "https://raw.githubusercontent.com/docker/compose/1.29.2/contrib/completion/bash/docker-compose" -o /etc/bash_completion.d/docker-compose
+  - chmod +x /usr/local/bin/docker-compose
+  - ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+  - echo "yc install:" + $(TZ=":Europe/Moscow" date +"%FT%T%z")
+  - export HOME=/root
+  - curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i /opt/yandex-cloud -n
+  #- /opt/yandex-cloud/bin/yc version
+  - /opt/yandex-cloud/bin/yc config profile create sa-profile
+  - /opt/yandex-cloud/bin/yc config set cloud-id b1g94vb73dlv93sq1kso
+  - /opt/yandex-cloud/bin/yc config set folder-id b1guct3p3e1f0bucvppf
+  # Generate an SSH key pair
+  # https://docs.gitlab.com/ee/ssh/#ed25519-ssh-keys
+  # ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519 -C "matem@matem.ru"
+  # KMS encrypt ssh key
+  # /opt/yandex-cloud/bin/yc kms symmetric-crypto encrypt --id abjlg4kb8124qp8mulgj --plaintext-file .ssh/id_ed25519 --ciphertext-file .ssh/id_ed25519.enc
+  # base64 .ssh/id_ed25519.enc
+  # paste to section "write_files"
+  # cat .ssh/id_ed25519.pub
+  # paste to section "write_files"
+  # and add to GitHub Deployment keys: https://github.com/ikashapov/infra-%repo%/settings/keys
+  - /opt/yandex-cloud/bin/yc kms symmetric-crypto decrypt --id abjlg4kb8124qp8mulgj --ciphertext-file /root/.ssh/id_ed25519.enc --plaintext-file /root/.ssh/id_ed25519
+  - usermod -L prj
+  - mkdir -p /opt/prj
+  #- pwd # /
+  - echo "git clone:" + $(TZ=":Europe/Moscow" date +"%FT%T%z")
+  - cd /opt/prj
+  - curl -L https://api.github.com/meta | jq -r '.ssh_keys | .[]' | sed -e 's/^/github.com /' >> ~/.ssh/known_hosts
+  - /usr/bin/git clone git@github.com:ikashapov/infra-ip.tn.ru.git
+  - cd /opt/prj/infra-ip.tn.ru
+  - echo "pg_restore.stage:" + $(TZ=":Europe/Moscow" date +"%FT%T%z")
+  - wget "https://storage.yandexcloud.net/cloud-certs/CA.pem" -O ./volume/pg_root.crt && chmod 0640 ./volume/pg_root.crt
+  - docker run --mount type=bind,source=$(pwd),target=/repo --rm postgres bash /repo/pg_restore.stage.sh | tee pg_restore.stage.log
+  - chown 1000:999 -R /opt/prj
+  - chmod g+w -R /opt/prj
+  #- chmod +x ./up.sh
+  - /usr/bin/docker-compose version
+  - /usr/bin/timedatectl
+  - systemctl status systemd-timesyncd.service
+  #- echo "run ./up.sh:" + $(TZ=":Europe/Moscow" date +"%FT%T%z")
+  - crontab crontab.txt
+  - ./up.sh
+  - chmod 644 /var/log/cloud-init-output.log
+  - echo "end runcmd:" + $(TZ=":Europe/Moscow" date +"%FT%T%z")
+
+# phone_home: if this dictionary is present, then the phone_home
+# cloud-config module will post specified data back to the given
+# url
+# default: none
+# phone_home:
+#   url: http://my.foo.bar/$INSTANCE/
+#   post: all
+#   tries: 10
+#
+# url call afrer runcmd and before power_state last reboot
+phone_home:
+  url: https://functions.yandexcloud.net/d4enq8mqnq807snplq9i
+  #post: [ pub_key_dsa, pub_key_rsa, pub_key_ecdsa, instance_id ]
+  post: all
+  tries: 1
+
+## poweroff or reboot system after finished
+# default: none
+#
+# power_state can be used to make the system shutdown, reboot or
+# halt after boot is finished.  This same thing can be acheived by
+# user-data scripts or by runcmd by simply invoking 'shutdown'.
+# 
+# Doing it this way ensures that cloud-init is entirely finished with
+# modules that would be executed, and avoids any error/log messages
+# that may go to the console as a result of system services like
+# syslog being taken down while cloud-init is running.
+#
+# If you delay '+5' (5 minutes) and have a timeout of
+# 120 (2 minutes), then the max time until shutdown will be 7 minutes.
+# cloud-init will invoke 'shutdown +5' after the process finishes, or
+# when 'timeout' seconds have elapsed.
+#
+# delay: form accepted by shutdown.  default is 'now'. other format
+#        accepted is +m (m in minutes)
+# mode: required. must be one of 'poweroff', 'halt', 'reboot'
+# message: provided as the message argument to 'shutdown'. default is none.
+# timeout: the amount of time to give the cloud-init process to finish
+#          before executing shutdown.
+# condition: apply state change only if condition is met.
+#            May be boolean True (always met), or False (never met),
+#            or a command string or list to be executed.
+#            command's exit code indicates:
+#               0: condition met
+#               1: condition not met
+#            other exit codes will result in 'not met', but are reserved
+#            for future use.
+#
+power_state:
+  #delay: "+1"
+  mode: reboot
+  timeout: 30
+  condition: True

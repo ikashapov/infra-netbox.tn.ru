@@ -1,0 +1,59 @@
+﻿name: Create PROD VM
+on:
+  workflow_dispatch:
+
+jobs:
+  build_stage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: env info
+        run: |
+          echo "docker version"
+          docker version
+          echo "docker compose version"
+          docker compose version
+          pwd
+          whoami
+          curl ifconfig.co
+          ip a
+          ls -la
+          sed -i "s/DEPLOYMENT=stage/DEPLOYMENT=prod/g" .build.deployment
+          cat ./.build.deployment
+
+      - name: install yc
+        run: |
+          curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i /opt/yandex-cloud -n
+          /opt/yandex-cloud/bin/yc version
+          /opt/yandex-cloud/bin/yc config profile create sa-profile
+
+      - name: save secrets
+        run: |
+          echo "${{secrets.DOCKER_REGISTRY_KEY}}" | base64 -d | docker login --username json_key --password-stdin cr.yandex
+          echo "${{secrets.DOCKER_REGISTRY_KEY}}" | base64 -d > key.json
+          /opt/yandex-cloud/bin/yc config set service-account-key key.json
+          /opt/yandex-cloud/bin/yc config set cloud-id b1g94vb73dlv93sq1kso
+          /opt/yandex-cloud/bin/yc config set folder-name baydakov
+          mkdir -p ./secrets
+          echo "${{secrets.GITLAB_KEY}}" | base64 -d > ./secrets/.gitlab
+
+      - name: create VM
+        run: |
+          # Запустить создание VM
+          /opt/yandex-cloud/bin/yc compute instance create \
+            --cloud-id b1g94vb73dlv93sq1kso \
+            --folder-name baydakov \
+            --name inv-project-prod \
+            --hostname inv-project-prod \
+            --create-boot-disk name=inv-project-prod,type=network-ssd,size=65G,image-folder-id=standard-images,image-family=ubuntu-2004-lts \
+            --network-interface subnet-name=inv-central1b,nat-ip-version=ipv4,nat-address=51.250.107.214,security-group-ids=[enpo399rinl1uf3dloag,enpf5h2f2n4arfp4a815] \
+            --zone ru-central1-b \
+            --memory 4 \
+            --cores 2 \
+            --core-fraction 100 \
+            --metadata serial-port-enable=1 \
+            --labels deployment=prod \
+            --service-account-name inv-project-prod \
+            --metadata-from-file user-data=infra/vm-prod.yaml

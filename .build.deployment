@@ -1,0 +1,9 @@
+# https://cloud.yandex.ru/docs/container-registry/ docker registry
+REGISTRY_HOST=cr.yandex/crpui9h78iusdu5n48de
+
+# Project Name
+PROJECT=infra-netbox.tn.ru
+
+# https://en.wikipedia.org/wiki/Deployment_environment
+# prod | stage | test
+DEPLOYMENT=stage

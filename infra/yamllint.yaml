@@ -1,0 +1,12 @@
+# https://yamllint.readthedocs.io/en/stable/configuration.html#configuration
+extends: default
+
+rules:
+  # https://yamllint.readthedocs.io/en/stable/rules.html#module-yamllint.rules.line_length
+  line-length:
+    max: 80
+    level: warning
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: false
+  document-start:
+    present: false
