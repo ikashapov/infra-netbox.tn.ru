@@ -1,11 +1,4 @@
 {
-  "listeners": {
-    "0.0.0.0:8443": {
-      "pass": "routes/main"
-    },
-    "[::]:8443": {
-      "pass": "routes/main"
-    },
     "0.0.0.0:8080": {
       "pass": "routes/main"
     },
