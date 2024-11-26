@@ -110,7 +110,7 @@ runcmd:
   #- /opt/yandex-cloud/bin/yc version
   - /opt/yandex-cloud/bin/yc config profile create sa-profile
   - /opt/yandex-cloud/bin/yc config set cloud-id b1g94vb73dlv93sq1kso
-  - /opt/yandex-cloud/bin/yc config set folder-id b1guct3p3e1f0bucvppf
+  - /opt/yandex-cloud/bin/yc config set folder-id b1gv6c0emfiv0foqmguf
   # Generate an SSH key pair
   # https://docs.gitlab.com/ee/ssh/#ed25519-ssh-keys
   # ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519 -C "matem@matem.ru"
