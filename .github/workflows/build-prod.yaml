@@ -1,0 +1,36 @@
+﻿name: Build PROD docker image and publish to registry
+on:
+  push:
+    paths:
+      - '*.build.tags.prod'
+  workflow_dispatch:
+
+jobs:
+  build_stage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step 1 checkout
+        uses: actions/checkout@v3
+
+      - name: Step 2 env info
+        run: |
+          echo "docker version"
+          docker version
+          echo "docker compose version"
+          docker compose version
+          pwd
+          whoami
+          curl ifconfig.co
+          ip a
+          ls -la
+          sed -i "s/DEPLOYMENT=stage/DEPLOYMENT=prod/g" .build.deployment
+          cat ./.build.deployment
+
+      - name: Step 3 save secrets
+        run: |
+          echo "${{secrets.DOCKER_REGISTRY_KEY}}" | base64 -d | docker login --username json_key --password-stdin cr.yandex
+          mkdir -p ./secrets
+          echo "${{secrets.GITLAB_KEY}}" | base64 -d > ./secrets/.gitlab
+
+      - name: Step 4 build docker image and push to registry
+        run: bash ./build.sh
