@@ -1,7 +1,6 @@
 .git*
 *.md
 build*
-docker-compose*
 env
 test-configuration
 .netbox/.git*
