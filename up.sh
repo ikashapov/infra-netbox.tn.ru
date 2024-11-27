@@ -56,7 +56,7 @@ docker login \
          --password $(curl -H Metadata-Flavor:Google http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token | jq -r '.access_token') \
          cr.yandex
 
-docker compose -f docker-compose.common.yaml -f .docker-compose.yaml config > docker-compose.yaml
+docker compose -f .docker-compose.yaml config > docker-compose.yaml
 
 docker compose pull
 
