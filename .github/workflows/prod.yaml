@@ -45,7 +45,7 @@ jobs:
             --name netbox-prod \
             --hostname netbox-prod \
             --create-boot-disk name=netbox-prod,type=network-ssd,size=90G,image-folder-id=standard-images,image-family=ubuntu-2004-lts \
-            --network-interface subnet-name=inv-central1b,nat-ip-version=ipv4,nat-address=158.160.11.30,security-group-ids=[enp1hoi89turbc7ulfic] \
+            --network-interface subnet-name=netbox-ru-central1-b,nat-ip-version=ipv4,nat-address=158.160.11.30,security-group-ids=[enp1hoi89turbc7ulfic] \
             --zone ru-central1-b \
             --memory 8 \
             --cores 4 \
