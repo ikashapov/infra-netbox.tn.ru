@@ -1,0 +1,5 @@
+# serivce name in []
+declare -A Tags
+
+# minus not allowed in tags name
+Tags[netbox]=v0.0.5

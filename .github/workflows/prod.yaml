@@ -31,13 +31,10 @@ jobs:
 
       - name: save secrets
         run: |
-          echo "${{secrets.DOCKER_REGISTRY_KEY}}" | base64 -d | docker login --username json_key --password-stdin cr.yandex
           echo "${{secrets.DOCKER_REGISTRY_KEY}}" | base64 -d > key.json
           /opt/yandex-cloud/bin/yc config set service-account-key key.json
           /opt/yandex-cloud/bin/yc config set cloud-id b1g94vb73dlv93sq1kso
           /opt/yandex-cloud/bin/yc config set folder-name gruzdov
-          mkdir -p ./secrets
-          echo "${{secrets.GITLAB_KEY}}" | base64 -d > ./secrets/.gitlab
 
       - name: create VM
         run: |
@@ -55,5 +52,5 @@ jobs:
             --core-fraction 100 \
             --metadata serial-port-enable=1 \
             --labels deployment=prod \
-            --service-account-name inv-project-prod \
+            --service-account-name netbox-prod-vm \
             --metadata-from-file user-data=infra/vm-prod.yaml

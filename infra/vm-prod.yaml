@@ -41,20 +41,20 @@ users:
 write_files:
 -   encoding: b64
     content: |
-        AAAAAQAAABRhYmp2dWkwaWJrY2Z1Ym1kMmMyYgAAABDIUG9+nQPcEIYWs8u6VDMVAAAADArCYMi6
-        2vA4kCwYXEBtzbPLjWvV6CPA01Xuix280PKEOTJvBN9GVNoVeK3owhJcSxDvom6fgdE9wOVPR14+
-        DtizF+ANa0+LJRdPflTNGS22HLde2rOBm/xWSybGgxKrYDJ41raOkxX2wpmcDOfBpPLIKB04Tl+9
-        A8cD5AXdyeEwRfoojPosn8rZMK+NVIS24P8v9IL9AEX4jPfZVZ5qxQTtnbu33Q/Y5LsjQGIpXF2A
-        PRCFfz6Bvm0CUAuLGakkTbrFgYe9R8ca1hqL8tm6xk0g/B+1US3uzmkOs29/XznO5m8lUb9W9QAn
-        nFho4mAyUu9TkKDa7tyT0K48ACd5Ce0WRmEh8s5g3yWlp8YTvO4OklBqRwOKeuyZ4cwP7tpemXMe
-        ASisBkZbQBP2+kfBXpoGZ7IrohblMD+axG/blfC/oBhTDyiTi6InIOEXqtB3+mReFi5Wkbfl3qKS
-        0a2TdKfnAK64KrsiEckwtFoFGKl32A5JdqLudmxnSA1H6aBFl5mP5kheikzSjrU8xaj7dNIGUhQV
-        KNSVRRLWIQp63W45b9Y9wQOJsSLjo6qOuFt3Fbb0tH4rn1Q=
+        AAAAAQAAABRhYmpsNTQ2dXFvdTUycXNjOTNjYgAAABCDTal9vFP+5tk6WaNplhllAAAADPgybniy
+        fnGPsRHpaBnhQ5U8gjq33H5M1dMUyz1xy/1jigyCXFbB07S4aVZGfQklgTvMLggKfqX60Q3gMc5j
+        DN23HG3cB2muWGy2T8b8SLRfIOARXROwrDhUByou1bbe26gSv6V6eEPJPO9JcuGXA5HaUZHGPJo1
+        CfD36DtNb16f5n/OfNqFsyDtzHLTeONHffc5ZZkza9guJeQ3kbZ6VgVo+jz81eZKU5xn1hgmYopR
+        RHtNLlVwchdm25PtnMYG4KkL9tGxKHmpVNvBoJWqywuUTg4gaHKLN2NBpdvuinchg9T4+avbeXuA
+        W1KV2b7mT2J13O6aXvLhDzeCIQ/K+OrNtennMJsnoVcls92jT2kTm2rCDWKOrXENtnJPSFu5Jgj3
+        0LLmGFp51S+dspIMivgVPj/xrkih4ySp6Ysxg/um8eEhFjKgy2mIgWgZJShaSlhR0nIdpV6+MInT
+        hxdqU1w3IP/0XztERCfJU517n6x7O19CatMrPjflT+64RRMjgq45ST9pPmJD5xr9cIr3OnHOv/A9
+        vEYmV7oLi1FsysFWYFTMIZ1u5LZ5TGRwnyIxJCRZCW76MrE=    
     owner: root:root
     path: /root/.ssh/id_ed25519.enc
     permissions: '0600'
 -   content: |
-        ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPg1nnpZt88m9Mnb9sBGHn4hNqWwfk1vu4aKUllVWX4D inventory@github
+        ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIENtkSaAiZ+xBRArm4nSZzG8INpbr9P3krwzM/u6Y90w github-deploy-netbox
     owner: root:root
     path: /root/.ssh/id_ed25519.pub
     permissions: '0644'
@@ -115,13 +115,13 @@ runcmd:
   # https://docs.gitlab.com/ee/ssh/#ed25519-ssh-keys
   # ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519 -C "matem@matem.ru"
   # KMS encrypt ssh key
-  # /opt/yandex-cloud/bin/yc kms symmetric-crypto encrypt --id abjlg4kb8124qp8mulgj --plaintext-file .ssh/id_ed25519 --ciphertext-file .ssh/id_ed25519.enc
+  # /opt/yandex-cloud/bin/yc kms symmetric-crypto encrypt --id abj1rkgejvkkl49v287u --plaintext-file .ssh/id_ed25519 --ciphertext-file .ssh/id_ed25519.enc
   # base64 .ssh/id_ed25519.enc
   # paste to section "write_files"
   # cat .ssh/id_ed25519.pub
   # paste to section "write_files"
   # and add to GitHub Deployment keys: https://github.com/ikashapov/infra-%repo%/settings/keys
-  - /opt/yandex-cloud/bin/yc kms symmetric-crypto decrypt --id abjlg4kb8124qp8mulgj --ciphertext-file /root/.ssh/id_ed25519.enc --plaintext-file /root/.ssh/id_ed25519
+  - /opt/yandex-cloud/bin/yc kms symmetric-crypto decrypt --id abj1rkgejvkkl49v287u --ciphertext-file /root/.ssh/id_ed25519.enc --plaintext-file /root/.ssh/id_ed25519
   - usermod -L prj
   - mkdir -p /opt/prj
   - echo "git clone:" + $(TZ=":Europe/Moscow" date +"%FT%T%z")
